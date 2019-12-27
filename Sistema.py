@@ -1,4 +1,5 @@
 import sys
+from Volume import *
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -72,37 +73,47 @@ class Ui(QtWidgets.QMainWindow):
         
         #Click para abrir o player de musica
         self.btnPlayer.clicked.connect(self.telaPlayer)
-
-        #Botão Volume
-        self.dialVolume.valueChanged.connect(self.volumehandler)
         
         #Click no botão de MUTE
         self.btnMute.clicked.connect(self.mutehandler)
-
+        self.btnVolMais.clicked.connect(self.volumeMaisHandler)
+        self.btnVolMenos.clicked.connect(self.volumeMenosHandler)
+        
         #Click para configurações
         self.btnConfig.clicked.connect(self.confighandler)
 
         #Botão de seleção de arquivos de musica
         self.btnFolder.clicked.connect(self.searchConfigFolder)
 
-        #self.showFullScreen()
-        self.show()
+        #Colocando em 0 o volume do sistema operacional
+        set_volume(0)
+        
+        self.showFullScreen()
+        #self.show()
         
 
 
     def alteraImagemFarol(self):
         if(self.ckbDLR.isChecked()):
-            self.lblImagemKa.setPixmap(QPixmap("../Icones/LanternaAcesa.png"))
+            self.lblImagemKa.setPixmap(QPixmap("Icones/LanternaAcesa.png"))
         else:
-            self.lblImagemKa.setPixmap(QPixmap("../Icones/LanternaApagada.png"))
-
+            self.lblImagemKa.setPixmap(QPixmap("Icones/LanternaApagada.png"))
 
 
     #Controle do volume
-    def volumehandler(self):
+    def volumeMaisHandler(self):
+        volume_up()
+        newPos = self.pgsVolume.value() + 2
+        self.pgsVolume.setValue(newPos)
         self.wVolume.setVisible(True)
-        self.pgsVolume.setValue(self.dialVolume.value())
         self.timerBarraVolume.start(2000)
+
+    def volumeMenosHandler(self):
+        volume_down()
+        newPos = self.pgsVolume.value() - 2
+        self.pgsVolume.setValue(newPos)
+        self.wVolume.setVisible(True)
+        self.timerBarraVolume.start(2000)        
 
     #Barra volume visible off
     def barraVolumeOff(self):
@@ -111,11 +122,7 @@ class Ui(QtWidgets.QMainWindow):
 
     #BtnMude
     def mutehandler(self):
-        if(self.dialVolume.value() == 0):
-            self.dialVolume.setValue(self.volume)
-        else:
-            self.volume = self.dialVolume.value()
-            self.dialVolume.setValue(0)
+        mute_volume()
         
     #Relógio do sistema
     def hora(self):
@@ -153,7 +160,7 @@ class Ui(QtWidgets.QMainWindow):
 
     def addFiles(self):
         icon = QIcon()
-        icon.addPixmap(QPixmap("../Icones/Play2.png"), QIcon.Normal, QIcon.Off)
+        icon.addPixmap(QPixmap("Icones/Play2.png"), QIcon.Normal, QIcon.Off)
         self.btnPlay.setIcon(icon)          
         if self.playlist.mediaCount() != 0:
             self.playlist.clear()
@@ -204,13 +211,13 @@ class Ui(QtWidgets.QMainWindow):
         elif self.playlist.mediaCount() != 0:
             if(self.userAction == 1):
                 icon = QIcon()
-                icon.addPixmap(QPixmap("../Icones/Play2.png"), QIcon.Normal, QIcon.Off)
+                icon.addPixmap(QPixmap("Icones/Play2.png"), QIcon.Normal, QIcon.Off)
                 self.btnPlay.setIcon(icon)
                 self.player.pause()
                 self.userAction = 2
             else:
                 icon = QIcon()
-                icon.addPixmap(QPixmap("../Icones/pause2.png"), QIcon.Normal, QIcon.Off)
+                icon.addPixmap(QPixmap("Icones/pause2.png"), QIcon.Normal, QIcon.Off)
                 self.btnPlay.setIcon(icon)
                 self.player.play()
                 self.userAction = 1
@@ -226,7 +233,7 @@ class Ui(QtWidgets.QMainWindow):
         elif self.playlist.mediaCount() != 0:
             self.player.playlist().previous()
             icon = QIcon()
-            icon.addPixmap(QPixmap("../Icones/Play2.png"), QIcon.Normal, QIcon.Off)
+            icon.addPixmap(QPixmap("Icones/Play2.png"), QIcon.Normal, QIcon.Off)
             self.btnPlay.setIcon(icon)  
             
 
@@ -239,7 +246,7 @@ class Ui(QtWidgets.QMainWindow):
 
     def stophandler(self):
         icon = QIcon()
-        icon.addPixmap(QPixmap("../Icones/Play2.png"), QIcon.Normal, QIcon.Off)
+        icon.addPixmap(QPixmap("Icones/Play2.png"), QIcon.Normal, QIcon.Off)
         self.btnPlay.setIcon(icon)        
         self.userAction = 0
         self.player.stop()
@@ -337,7 +344,7 @@ class Ui(QtWidgets.QMainWindow):
                 
     def exibeAviso(self, mensagem, imagem):
         self.lblMensagem.setText(mensagem)
-        self.lblImagem.setPixmap(QPixmap("../Icones/"+imagem+".png"))
+        self.lblImagem.setPixmap(QPixmap("Icones/"+imagem+".png"))
         self.wAvisos.setVisible(True)
 
     
